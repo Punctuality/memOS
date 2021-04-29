@@ -7,7 +7,7 @@ LD = ld
 deploy-image: recompile clean-object-files
 
 run: all target/os-image
-	qemu-system-x86_64 -fda target/os-image
+	qemu-system-i386 -D log.txt -machine q35 -fda target/os-image -s -S
 
 recompile: prep all
 
