@@ -6,6 +6,7 @@
 #include "util.h"
 #include "base.h"
 #include "../drivers/screen.h"
+#include "../kernel/memory/include/paging.h"
 
 #define MSG_LEN 9
 #define MAX_ARGS 5
@@ -42,6 +43,7 @@ void noop() {
 
 void echo() {
     print_newline();
+    print_d((const char *) read_cr3());
     print_d(cmd_args[1]);
 }
 

@@ -54,6 +54,9 @@ driver_targets: target/screen.o target/idt.o target/keyboard.o target/io_functio
 
 # Kernel
 
+target/memory.o: kernel/memory/paging.c
+	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
+
 target/util.o: kernel/util.c
 	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
 
@@ -63,7 +66,7 @@ target/shell.o: kernel/shell.c
 target/kernel.o: kernel/kernel.c
 	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
 
-kernel_targets: target/util.o target/shell.o target/kernel.o
+kernel_targets: target/memory.o target/util.o target/shell.o target/kernel.o
 
 # Finalize
 
