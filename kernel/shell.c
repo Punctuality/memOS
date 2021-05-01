@@ -43,7 +43,7 @@ void noop() {
 
 void echo() {
     print_newline();
-    print_d((const char *) read_cr3());
+    print_d ((const char *) read_cr3());
     print_d(cmd_args[1]);
 }
 

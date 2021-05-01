@@ -53,7 +53,6 @@ target/io_functions.o: drivers/io_functions.asm
 driver_targets: target/screen.o target/idt.o target/keyboard.o target/io_functions.o
 
 # Kernel
-
 target/memory.o: kernel/memory/paging.c
 	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
 
@@ -70,7 +69,7 @@ kernel_targets: target/memory.o target/util.o target/shell.o target/kernel.o
 
 # Finalize
 
-target/kernel.bin: target/kernel_entry.o target/screen.o target/idt.o target/keyboard.o target/util.o target/shell.o target/kernel.o target/io_functions.o
+target/kernel.bin: target/kernel_entry.o target/screen.o target/idt.o target/keyboard.o target/util.o target/memory.o target/shell.o target/kernel.o target/io_functions.o
 	$(LD) -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
 
 target/os-image: target/bootstrap.bin target/kernel.bin
