@@ -27,7 +27,7 @@ bits 16
 
 load_kernel:
 	mov bx, KERNEL_OFFSET ; destination
-	mov dh, 32 ; 32 sectors of drive
+	mov dh, 32            ; 32 sectors of drive
 	mov dl, [BOOT_DRIVE]
 	call disk_load
 
@@ -36,6 +36,20 @@ load_kernel:
 
 	ret
 
+enable_paging:
+        ; enable paging
+        mov cr3, eax
+
+        mov ebx, cr4        ; read current cr4
+        or  ebx, 0x00000010 ; set PSE
+        mov cr4, ebx        ; update cr4
+
+        mov ebx, cr0        ; read current cr0
+        or  ebx, 0x80000000 ; set PG
+        mov cr0, ebx        ; update cr0
+
+        ret
+
 bits 32
 
 BEGIN_PM:
@@ -43,6 +57,8 @@ BEGIN_PM:
 	call print_string_pm
 
 	call KERNEL_OFFSET
+
+    call enable_paging
 
 	jmp $
 
