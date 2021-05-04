@@ -14,6 +14,7 @@ boot:
 	call load_kernel
 
 	call switch_to_32
+    call detect_memory
 
 	jmp $
 
@@ -22,6 +23,7 @@ boot:
 %include "boot/disk_load.asm"
 %include "boot/gdt.asm"
 %include "boot/switch_to_32.asm"
+%include "boot/detect_memory.asm"
 
 bits 16
 
