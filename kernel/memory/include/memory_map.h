@@ -1,5 +1,5 @@
 //
-// Created by kain on 04.05.2021.
+// Created by Lazurin Eugene on 04.05.2021.
 //
 
 #ifndef MEMOS_MEMORY_MAP_H
@@ -16,4 +16,5 @@ struct memory_map_entry {
 
 extern uint8_t memory_region_count;
 
+void print_memory_map(struct memory_map_entry* memoryMap);
 #endif //MEMOS_MEMORY_MAP_H

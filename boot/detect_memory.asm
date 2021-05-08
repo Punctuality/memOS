@@ -1,6 +1,6 @@
 memory_region_count:
-    global memory_region_count
     db 0
+    global memory_region_count
 
 detect_memory:
     mov ax, 0
