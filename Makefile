@@ -1,6 +1,6 @@
 CC = gcc
 ASM = nasm
-LD = ld
+LD = ld -T linker.ld
 
 # Custom
 
