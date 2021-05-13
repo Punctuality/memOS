@@ -7,7 +7,7 @@
 
 
 struct page_table_entry_t {
-    char phys_page_adress: 1;
+    int phys_page_adress: 20;
     char avail: 3;
     char global: 1;
     char zero: 1;
@@ -18,7 +18,7 @@ struct page_table_entry_t {
     char user_supervisor: 1;
     char read_write: 1;
     char present: 1;
-}__attribute((__packed__));;
+}__attribute((__packed__));
 
 
 void set_page_table_entry(struct page_table_entry_t *table, int index);
