@@ -21,7 +21,7 @@ struct page_table_entry_t {
 }__attribute((__packed__));
 
 
-void set_page_table_entry(struct page_table_entry_t *table, int index);
+void set_page_table_entry(uint32_t endkernel);
 
 
 #endif //MEMOS_PAGING_H
