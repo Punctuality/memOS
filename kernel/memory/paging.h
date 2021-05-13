@@ -7,14 +7,14 @@
 
 
 struct page_table_entry_t {
-    int phys_page_adress: 20;
+    int phys_page_address: 20;
     char avail: 3;
     char global: 1;
     char zero: 1;
     char dirty: 1;
     char accessed: 1;
     char cache_disabled: 1;
-    char write_throught: 1;
+    char write_through: 1;
     char user_supervisor: 1;
     char read_write: 1;
     char present: 1;
