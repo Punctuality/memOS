@@ -11,13 +11,6 @@
 
 struct page_table_entry_t pageDirectory[PAGE_TABLE_COUNT];
 
-int32_t read_cr3() {
-    int value;
-    __asm__("mov %%cr3, %%eax" : "=a"(value));
-
-    return value;
-}
-
 void make_page(void *address) {
     struct page_table_entry_t *page = (void *) address;
     page->phys_page_address = TODO_PHYS_ADR;
@@ -51,10 +44,22 @@ void set_page_directory(void *start_address) {
     }
 }
 
+extern void *_end;
+
 void init_memory() {
-    set_page_directory((void *) read_cr3());
+    asm volatile (
+    "movl %%cr4, %%eax;"
+    "bts  $5,    %%eax;"
+    "movl %%eax, %%cr4":: : "eax"); // set bit5 in CR4 to enable PAE
+    set_page_directory(_end);
+    uint32_t page_dir_ptr __attribute__((aligned(0x20)));
+    page_dir_ptr = (uint32_t) &pageDirectory;
+    asm volatile ("movl %0, %%cr3"::"r" (&page_dir_ptr)); // load PDPT into CR3
+//    asm volatile ("movl %%cr0, %%eax;"
+//                  "orl $0x80000000, %%eax;"
+//                  "movl %%eax, %%cr0;" ::: "eax");
 }
 
 //TODO alignment of structs      V
 //TODO phys address function     X
-//TODO end of kernel variable    X
+//TODO end of kernel variable    V

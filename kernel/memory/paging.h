@@ -1,5 +1,5 @@
 //
-// Created by kain on 13.05.2021.
+// Created by Lazurin Eugene on 13.05.2021.
 //
 
 #ifndef MEMOS_PAGING_H
@@ -21,10 +21,12 @@ struct page_table_entry_t {
     char present: 1;
 } __attribute((__packed__));
 
-int32_t read_cr3();
 void make_page(void *address);
-void * set_page_table_entry(void* address);
+
+void *set_page_table_entry(void *address);
+
 void set_page_directory(void *start_address);
+
 void init_memory();
 
 #endif //MEMOS_PAGING_H
