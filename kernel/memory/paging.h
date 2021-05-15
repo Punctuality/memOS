@@ -5,6 +5,7 @@
 #ifndef MEMOS_PAGING_H
 #define MEMOS_PAGING_H
 
+#include <stdint.h>
 
 struct page_table_entry_t {
     int phys_page_address: 20;
@@ -18,10 +19,12 @@ struct page_table_entry_t {
     char user_supervisor: 1;
     char read_write: 1;
     char present: 1;
-}__attribute((__packed__));
+} __attribute((__packed__));
 
-
-void set_page_table_entry(uint32_t endkernel);
-
+int32_t read_cr3();
+void make_page(void *address);
+void * set_page_table_entry(void* address);
+void set_page_directory(void *start_address);
+void init_memory();
 
 #endif //MEMOS_PAGING_H

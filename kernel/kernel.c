@@ -1,6 +1,7 @@
 #include "../drivers/keyboard.h"
 #include "../drivers/idt.h"
 #include "shell.h"
+#include "memory/paging.h"
 
 extern void keyboard_handler_int();
 
@@ -12,6 +13,7 @@ void initialize(){
     load_idt_entry(0x21, (unsigned long) keyboard_handler_int, 0x08, 0x8e);
     kb_init();
     shell_init();
+    init_memory();
 }
 
 void kmain() {
