@@ -23,9 +23,8 @@ clean:
 	rm -rf target/
 
 clean-object-files:
-	printf "aaaa"
-#	rm target/*.o
-#	rm target/*.bin
+	rm target/*.o
+	rm target/*.bin
 
 # Boot
 
