@@ -1,7 +1,7 @@
 #include "../drivers/keyboard.h"
 #include "../drivers/idt.h"
 #include "shell.h"
-#include "memory/i_hate_paging.h"
+#include "memory/include/paging.h"
 extern void keyboard_handler_int();
 
 void initialize(){
