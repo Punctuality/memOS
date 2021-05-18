@@ -1,8 +1,7 @@
 #include "../drivers/keyboard.h"
 #include "../drivers/idt.h"
 #include "shell.h"
-#include "memory/paging.h"
-
+#include "memory/i_hate_paging.h"
 extern void keyboard_handler_int();
 
 void initialize(){
@@ -12,8 +11,8 @@ void initialize(){
     idt_init();
     load_idt_entry(0x21, (unsigned long) keyboard_handler_int, 0x08, 0x8e);
     kb_init();
+    set_page_dir();
     shell_init();
-    init_memory();
 }
 
 void kmain() {

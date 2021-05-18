@@ -23,8 +23,9 @@ clean:
 	rm -rf target/
 
 clean-object-files:
-	rm target/*.o
-	rm target/*.bin
+	printf "aaaa"
+#	rm target/*.o
+#	rm target/*.bin
 
 # Boot
 
@@ -66,11 +67,20 @@ target/kernel.o: kernel/kernel.c
 target/mem.o: kernel/memory/paging.c
 	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
 
-kernel_targets: target/util.o target/shell.o target/mem.o target/kernel.o
+target/load.o: kernel/memory/load_page_dir.asm
+	$(ASM) $< -f elf32 -o $@
+
+target/enable.o: kernel/memory/enable_paging.asm
+	$(ASM) $< -f elf32 -o $@
+
+target/hate.o: kernel/memory/i_hate_paging.c
+	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
+
+kernel_targets: target/util.o target/shell.o target/mem.o target/load.o target/enable.o target/hate.o target/kernel.o
 
 # Finalize
 
-target/kernel.bin: target/kernel_entry.o target/screen.o target/idt.o target/keyboard.o target/util.o target/shell.o target/mem.o target/kernel.o target/io_functions.o
+target/kernel.bin: target/kernel_entry.o target/screen.o target/idt.o target/keyboard.o target/util.o target/shell.o target/mem.o target/load.o target/enable.o target/hate.o target/kernel.o target/io_functions.o
 	$(LD) -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
 
 target/os-image: target/bootstrap.bin target/kernel.bin
