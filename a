@@ -1,5 +1,6 @@
-boot: floppy
-floppya: 1_44=./target/os-image , status=inserted
+boot: disk
+ata0: enabled=1, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
+ata0-master: type=disk, mode=flat, path="./target/disk.img"
 cpu: count=1, reset_on_triple_fault=0, ips=1000000
 megs: 130
 pci: enabled=1, chipset=i440fx, slot1=pcivga #, slot2=ne2k
