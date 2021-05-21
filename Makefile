@@ -7,21 +7,7 @@ LD = ld
 deploy-image: recompile clean-object-files
 
 disk: target/os-image
-	rm -f target/disk.img
-	dd if=/dev/zero of=target/disk.img bs=1024 count=10240
-	printf 'o\nn\np\n1\n\n\nw\n' | fdisk target/disk.img
-	losetup -f target/disk.img
-	partprobe /dev/loop17
-	mkfs.ext2 /dev/loop17p1
-	mount /dev/loop17p1 /mnt
-	grub-install --target=i386-pc --boot-directory=/mnt/boot /dev/loop17
-	cp target/os-image /mnt/boot/
-	echo "menuentry 'my' {" > /mnt/boot/grub.cfg
-	echo "  set root='hd0,1'" >> /mnt/boot/grub.cfg
-	echo "  multiboot /boot/os-image" >> /mnt/boot/grub.cfg
-	echo "}" >> /mnt/boot/grub.cfg
-	umount /mnt
-	losetup -d /dev/loop17
+	sh make_disk_image.sh
 
 run: all target/os-image
 	qemu-system-i386 -machine q35 -fda target/os-image
@@ -88,8 +74,6 @@ target/shell.o: kernel/shell.c
 target/kernel.o: kernel/kernel.c
 	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
 
-target/mem.o: kernel/memory/paging.c
-	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
 
 target/load.o: kernel/memory/load_page_dir.asm
 	$(ASM) $< -f elf32 -o $@
@@ -100,11 +84,11 @@ target/enable.o: kernel/memory/enable_paging.asm
 target/hate.o: kernel/memory/i_hate_paging.c
 	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
 
-kernel_targets: target/util.o target/shell.o target/mem.o target/load.o target/enable.o target/hate.o target/kernel.o
+kernel_targets: target/util.o target/shell.o target/load.o target/enable.o target/hate.o target/kernel.o
 
 # Finalize
 
-target/kernel.bin: boot/entry.o target/screen.o target/idt.o target/keyboard.o target/util.o target/shell.o target/mem.o target/load.o target/enable.o target/hate.o target/kernel.o target/io_functions.o
+target/kernel.bin: boot/entry.o target/screen.o target/idt.o target/keyboard.o target/util.o target/shell.o target/load.o target/enable.o target/hate.o target/kernel.o target/io_functions.o
 	$(LD) -m elf_i386 -o $@ -Ttext 0x1000 $^
 
 target/os-image: target/kernel.bin
