@@ -10,7 +10,7 @@ disk: target/os-image
 	sh make_disk_image.sh
 
 run: all target/os-image
-	qemu-system-i386 -machine q35 -fda target/os-image
+	qemu-system-i386 -machine type=pc-i440fx-3.1 -kernel target/os-image
 
 debug: all target/os-image
 	qemu-system-i386 -machine type=pc-i440fx-3.1 -D log.txt -hda target/disk.img -s -S
@@ -29,9 +29,8 @@ clean:
 	rm -rf target/
 
 clean-object-files:
-	printf "aaaa"
-#	rm target/*.o
-#	rm target/*.bin
+	rm target/*.o
+	rm target/*.bin
 
 # Boot
 
