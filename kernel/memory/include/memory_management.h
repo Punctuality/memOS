@@ -6,11 +6,19 @@
 #define MEMOS_MEMORY_MANAGEMENT_H
 
 #include <stddef.h>
+#include <stdint.h>
 
-void *kmmaloc(size_t size);
+typedef struct free_page_entry {
+    struct free_page_entry *next;
+    int count;
+} fpe;
 
-void *kmmap(unsigned int *address, size_t size);
+uint32_t kmalloc_int(unsigned int sz, int align, unsigned int *phys);
 
-void kfree(void *page);
+uint32_t kmalloc(uint32_t sz);
+
+void memset(unsigned char *dest, unsigned char val, int32_t len);
+
+uint32_t alloc_page_internal(void **, int);
 
 #endif //MEMOS_MEMORY_MANAGEMENT_H

@@ -83,11 +83,14 @@ target/enable.o: kernel/memory/enable_paging.asm
 target/hate.o: kernel/memory/i_hate_paging.c
 	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
 
-kernel_targets: target/util.o target/shell.o target/load.o target/enable.o target/hate.o target/kernel.o
+target/array.o: kernel/memory/array.c
+	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
+
+kernel_targets: target/util.o target/shell.o target/load.o target/enable.o target/hate.o target/array.o target/kernel.o
 
 # Finalize
 
-target/kernel.bin: boot/entry.o target/screen.o target/idt.o target/keyboard.o target/util.o target/shell.o target/load.o target/enable.o target/hate.o target/kernel.o target/io_functions.o
+target/kernel.bin: boot/entry.o target/screen.o target/idt.o target/keyboard.o target/util.o target/shell.o target/load.o target/enable.o target/hate.o target/array.o target/kernel.o target/io_functions.o
 	$(LD) -m elf_i386 -o $@ -Ttext 0x1000 $^
 
 target/os-image: target/kernel.bin
