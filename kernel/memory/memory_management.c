@@ -4,26 +4,31 @@
 
 #include "include/memory_management.h"
 
-void *get_phys_addr(void *virtual_addr) {
-    unsigned long pdindex = (unsigned long) virtual_addr >> 22;
-    unsigned long ptindex = (unsigned long) virtual_addr >> 12 & 0x03FF;
+extern _end; // end of kernel. I think, it's not work, it is plug
+unsigned int placement_address = (unsigned int) &_end;
 
-    unsigned long *pd = (unsigned long *) 0xFFFFF000;
-
-    unsigned long *pt = ((unsigned long *) 0xFFC00000) + (0x400 * pdindex);
-
-    return (void *) ((pt[ptindex] & ~0xFFF) + ((unsigned long) virtual_addr & 0xFFF));
+uint32_t kmalloc_int(unsigned int sz, int align, unsigned int *phys) {
+    if (align == 1 && (placement_address & 0xFFFFF000)) {
+        placement_address &= 0xFFFFF000;
+        placement_address += 0x1000;
+    }
+    if (phys) {
+        *phys = placement_address;
+    }
+    unsigned int tmp = placement_address;
+    placement_address += sz;
+    return tmp;
 }
 
-void *kmmap(unsigned int *address, size_t size) {
-    return NULL;
+uint32_t kmalloc(uint32_t sz) {
+    return kmalloc_int(sz, 0, 0);
 }
 
-void *kmalloc(size_t size) {
-    return NULL;
+void memset(unsigned char *dest, unsigned char val, int32_t len) {
+    unsigned char *temp = (unsigned char *) dest;
+    for (; len != 0; len--) *temp++ = val;
 }
 
-void kfree(void* page) {
-    return;
+uint32_t alloc_page_internal(void **where_to, int how_much) {
+    return 0;
 }
-
