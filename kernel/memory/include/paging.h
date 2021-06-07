@@ -1,5 +1,5 @@
 //
-// Created by kain on 16.05.2021.
+// Created by Lazurin Eugene on 16.05.2021.
 //
 
 #ifndef MEMOS_PAGING_H

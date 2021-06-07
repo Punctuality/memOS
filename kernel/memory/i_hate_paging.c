@@ -2,7 +2,6 @@
 // Created by Lazurin Eugene on 16.05.2021.
 //
 
-#include <stdint.h>
 #include "include/paging.h"
 
 struct page_directory_entry_t pageDirectoryEntry[1024] __attribute__((aligned(4096)));
