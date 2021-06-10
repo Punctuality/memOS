@@ -51,7 +51,10 @@ boot_targets: target/kernel_entry.o
 target/screen.o: drivers/screen.c
 	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
 
-target/idt.o: drivers/idt.c
+target/gdt.o: drivers/gdt.asm
+	$(ASM) $< -f elf32 -o $@
+
+target/idt.o: drivers/descriptor_tables.c
 	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
 
 target/keyboard.o: drivers/keyboard.c
@@ -60,7 +63,7 @@ target/keyboard.o: drivers/keyboard.c
 target/io_functions.o: drivers/io_functions.asm
 	$(ASM) $< -f elf32 -o $@
 
-driver_targets: target/screen.o target/idt.o target/keyboard.o target/io_functions.o
+driver_targets: target/screen.o target/gdt.o target/idt.o target/keyboard.o target/io_functions.o
 
 # Kernel
 
@@ -83,14 +86,20 @@ target/enable.o: kernel/memory/enable_paging.asm
 target/hate.o: kernel/memory/i_hate_paging.c
 	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
 
+target/mm.o: kernel/memory/memory_management.c
+	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
+
 target/array.o: kernel/memory/array.c
 	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
 
-kernel_targets: target/util.o target/shell.o target/load.o target/enable.o target/hate.o target/array.o target/kernel.o
+target/kheap.o: kernel/memory/kheap.c
+	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
+
+kernel_targets: target/util.o target/shell.o target/load.o target/enable.o target/hate.o target/mm.o target/array.o target/kheap.o target/kernel.o
 
 # Finalize
 
-target/kernel.bin: boot/entry.o target/screen.o target/idt.o target/keyboard.o target/util.o target/shell.o target/load.o target/enable.o target/hate.o target/array.o target/kernel.o target/io_functions.o
+target/kernel.bin: boot/entry.o target/screen.o target/gdt.o target/idt.o target/keyboard.o target/util.o target/shell.o target/load.o target/enable.o target/hate.o target/mm.o target/array.o target/kheap.o target/kernel.o target/io_functions.o
 	$(LD) -m elf_i386 -o $@ -Ttext 0x1000 $^
 
 target/os-image: target/kernel.bin

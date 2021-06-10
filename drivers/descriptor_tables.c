@@ -2,7 +2,7 @@
 // Created by sdfedorov on 14/01/2021.
 //
 
-#include "idt.h"
+#include "descriptor_tables.h"
 
 struct idt_pointer
 {
@@ -21,9 +21,12 @@ struct idt_entry
 
 struct idt_entry idt_table[IDT_SIZE];
 struct idt_pointer idt_ptr;
+gdt_entry_t gdt_entries[5];
+gdt_ptr_t gdt_ptr;
 
 extern void write_port(unsigned short port, unsigned char data);
 extern void load_idt(void*);
+extern void gdt_flush(unsigned int);
 
 static void initialize_idt_pointer() {
     idt_ptr.limit = (sizeof(struct idt_entry) * IDT_SIZE) - 1;
@@ -69,4 +72,34 @@ void idt_init() {
     initialize_pic();
     initialize_idt_pointer();
     load_idt(&idt_ptr);
+}
+
+static void gdt_init() {
+    gdt_ptr.limit = (sizeof (gdt_entry_t) * 5) - 1;
+    gdt_ptr.base = (unsigned int) &gdt_entries;
+
+    gdt_set_gate(0, 0, 0, 0, 0);               // null
+    gdt_set_gate(1, 0, 0xFFFFFFFF, 0x9A, 0xCF);// code
+    gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF);// data
+    gdt_set_gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF);// user mode code
+    gdt_set_gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF);// user mode data
+
+    gdt_flush((unsigned int)&gdt_ptr);
+}
+
+static void gdt_set_gate(int num, unsigned int base, unsigned int limit, unsigned char access, unsigned char gran) {
+    gdt_entries[num].base_low = (base & 0xFFFF);
+    gdt_entries[num].base_middle = (base >> 16) & 0xFF;
+    gdt_entries[num].base_high = (base >> 24) & 0xFF;
+
+    gdt_entries[num].limit_low = (limit & 0xFFFF);
+    gdt_entries[num].granularity = (limit >> 16) & 0x0F;
+
+    gdt_entries[num].granularity |= gran & 0xF0;
+    gdt_entries[num].access = access;
+}
+
+void init_descriptor_tables() {
+    idt_init();
+    gdt_init();
 }
