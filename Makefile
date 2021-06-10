@@ -51,7 +51,13 @@ boot_targets: target/kernel_entry.o
 target/screen.o: drivers/screen.c
 	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
 
+target/isr.o: drivers/isr.c
+	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
+
 target/gdt.o: drivers/gdt.asm
+	$(ASM) $< -f elf32 -o $@
+
+target/interrupts.o: drivers/interrupts.asm
 	$(ASM) $< -f elf32 -o $@
 
 target/idt.o: drivers/descriptor_tables.c
@@ -63,7 +69,7 @@ target/keyboard.o: drivers/keyboard.c
 target/io_functions.o: drivers/io_functions.asm
 	$(ASM) $< -f elf32 -o $@
 
-driver_targets: target/screen.o target/gdt.o target/idt.o target/keyboard.o target/io_functions.o
+driver_targets: target/screen.o target/isr.o target/gdt.o target/interrupts.o target/idt.o target/keyboard.o target/io_functions.o
 
 # Kernel
 
@@ -99,7 +105,7 @@ kernel_targets: target/util.o target/shell.o target/load.o target/enable.o targe
 
 # Finalize
 
-target/kernel.bin: boot/entry.o target/screen.o target/gdt.o target/idt.o target/keyboard.o target/util.o target/shell.o target/load.o target/enable.o target/hate.o target/mm.o target/array.o target/kheap.o target/kernel.o target/io_functions.o
+target/kernel.bin: boot/entry.o target/screen.o target/isr.o target/interrupts.o target/gdt.o target/idt.o target/keyboard.o target/util.o target/shell.o target/load.o target/enable.o target/hate.o target/mm.o target/array.o target/kheap.o target/kernel.o target/io_functions.o
 	$(LD) -m elf_i386 -o $@ -Ttext 0x1000 $^
 
 target/os-image: target/kernel.bin
