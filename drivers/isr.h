@@ -22,16 +22,17 @@
 #define IRQ14 46
 #define IRQ15 47
 
-typedef void (*isr_t)(registers_t);
-
-void register_interrupt_handler(unsigned char n, isr_t handler);
-
 typedef struct registers {
     unsigned int ds;
     unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;
     unsigned int int_no, err_code;
     unsigned int eip, cs, eflags, useresp, ss;
 } registers_t;
+
+typedef void (*isr_t)(registers_t);
+
+void registers_interrupt_handler(unsigned char n, isr_t handler);
+
 
 void isr_handler(registers_t regs);
 

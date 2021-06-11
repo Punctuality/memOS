@@ -69,7 +69,10 @@ target/keyboard.o: drivers/keyboard.c
 target/io_functions.o: drivers/io_functions.asm
 	$(ASM) $< -f elf32 -o $@
 
-driver_targets: target/screen.o target/isr.o target/gdt.o target/interrupts.o target/idt.o target/keyboard.o target/io_functions.o
+target/timer.o: drivers/timer.c
+	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
+
+driver_targets: target/screen.o target/isr.o target/gdt.o target/interrupts.o target/idt.o target/keyboard.o target/io_functions.o target/timer.o
 
 # Kernel
 
@@ -105,7 +108,7 @@ kernel_targets: target/util.o target/shell.o target/load.o target/enable.o targe
 
 # Finalize
 
-target/kernel.bin: boot/entry.o target/screen.o target/isr.o target/interrupts.o target/gdt.o target/idt.o target/keyboard.o target/util.o target/shell.o target/load.o target/enable.o target/hate.o target/mm.o target/array.o target/kheap.o target/kernel.o target/io_functions.o
+target/kernel.bin: boot/entry.o target/screen.o target/isr.o target/interrupts.o target/gdt.o target/idt.o target/keyboard.o target/util.o target/shell.o target/load.o target/timer.o target/enable.o target/hate.o target/mm.o target/array.o target/kheap.o target/kernel.o target/io_functions.o
 	$(LD) -m elf_i386 -o $@ -Ttext 0x1000 $^
 
 target/os-image: target/kernel.bin
