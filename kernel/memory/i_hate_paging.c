@@ -20,7 +20,7 @@ void set_page_dir() {
         first_page_table[i].present = 1;
     }
 
-    pageDirectoryEntry[0].page_table_4kb_aligned_address = ((unsigned int) &first_page_table) >> 12 & 0x3FF; // attention HARDCODE
+    pageDirectoryEntry[0].page_table_4kb_aligned_address = ((unsigned int) &first_page_table) >> 12 & 0x3FF;
     pageDirectoryEntry[0].read_write = 1;
     pageDirectoryEntry[0].present = 1;
 

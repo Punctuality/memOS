@@ -4,7 +4,7 @@
 
 #include "include/memory_management.h"
 
-extern _end; // end of kernel. I think, it's not work, it is plug
+extern int _end; // end of kernel. I think, it's not work, it is plug
 unsigned int placement_address = (unsigned int) &_end;
 
 uint32_t kmalloc_int(unsigned int sz, int align, unsigned int *phys) {

@@ -4,7 +4,7 @@
 
 #ifndef MEMOS_ARRAY_H
 #define MEMOS_ARRAY_H
-#include <inttypes.h>
+#include <stdint.h>
 typedef void *type_t;
 
 typedef char (*lessthan_predicate_t)(type_t, type_t);
