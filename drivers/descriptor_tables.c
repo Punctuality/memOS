@@ -66,22 +66,23 @@ static void initialize_idt_pointer() {
     load_idt_entry(29, (unsigned int) isr29, 0x08, 0x8E);
     load_idt_entry(30, (unsigned int) isr30, 0x08, 0x8E);
     load_idt_entry(31, (unsigned int) isr31, 0x08, 0x8E);
-    load_idt_entry(32, (unsigned int) irq0, 0x08, 0x8e);
-    load_idt_entry(33, (unsigned int) irq1, 0x08, 0x8e);
-    load_idt_entry(34, (unsigned int) irq2, 0x08, 0x8e);
-    load_idt_entry(35, (unsigned int) irq3, 0x08, 0x8e);
-    load_idt_entry(36, (unsigned int) irq4, 0x08, 0x8e);
-    load_idt_entry(37, (unsigned int) irq5, 0x08, 0x8e);
-    load_idt_entry(38, (unsigned int) irq6, 0x08, 0x8e);
-    load_idt_entry(39, (unsigned int) irq7, 0x08, 0x8e);
-    load_idt_entry(40, (unsigned int) irq8, 0x08, 0x8e);
-    load_idt_entry(41, (unsigned int) irq9, 0x08, 0x8e);
-    load_idt_entry(42, (unsigned int) irq10, 0x08, 0x8e);
-    load_idt_entry(43, (unsigned int) irq11, 0x08, 0x8e);
-    load_idt_entry(44, (unsigned int) irq12, 0x08, 0x8e);
-    load_idt_entry(45, (unsigned int) irq13, 0x08, 0x8e);
-    load_idt_entry(46, (unsigned int) irq14, 0x08, 0x8e);
-    load_idt_entry(47, (unsigned int) irq15, 0x08, 0x8e);
+
+    load_idt_entry(32, (unsigned int) irq0, 0x08, 0x8e);  // timer
+    load_idt_entry(33, (unsigned int) irq1, 0x08, 0x8e);  // keyboard
+    load_idt_entry(34, (unsigned int) irq2, 0x08, 0x8e);  // cascade
+    load_idt_entry(35, (unsigned int) irq3, 0x08, 0x8e);  // COM2
+    load_idt_entry(36, (unsigned int) irq4, 0x08, 0x8e);  // COM1
+    load_idt_entry(37, (unsigned int) irq5, 0x08, 0x8e);  // LPT2
+    load_idt_entry(38, (unsigned int) irq6, 0x08, 0x8e);  // floppy
+    load_idt_entry(39, (unsigned int) irq7, 0x08, 0x8e);  // LPT1
+    load_idt_entry(40, (unsigned int) irq8, 0x08, 0x8e);  // CMOS real-time clock
+    load_idt_entry(41, (unsigned int) irq9, 0x08, 0x8e);  // free
+    load_idt_entry(42, (unsigned int) irq10, 0x08, 0x8e); // free
+    load_idt_entry(43, (unsigned int) irq11, 0x08, 0x8e); // free
+    load_idt_entry(44, (unsigned int) irq12, 0x08, 0x8e); // ps2 mouse
+    load_idt_entry(45, (unsigned int) irq13, 0x08, 0x8e); // FPU
+    load_idt_entry(46, (unsigned int) irq14, 0x08, 0x8e); // primary ATA hard disk
+    load_idt_entry(47, (unsigned int) irq15, 0x08, 0x8e); // secondary ATA hard disk
 
     idt_flush((unsigned int) &idt_ptr);
 }
