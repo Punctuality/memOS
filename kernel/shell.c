@@ -45,6 +45,15 @@ void echo() {
     print_d(cmd_args[1]);
 }
 
+void panic(const char *msg) {
+    print_newline();
+    print_d("KERNEL PANIC( ");
+    print_d(msg);
+    print_d(" )");
+    print_newline();
+    for(;;);
+}
+
 void yes() {
     int yes_rep = MAX_ROWS - 1;
     if (cmd_args[1] == NULL) {
