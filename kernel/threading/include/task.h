@@ -1,5 +1,5 @@
 //
-// Created by Lazurin Eugene in suffering on 12.06.2021.
+// Created by Lazurin Eugene in pain on 12.06.2021.
 //
 
 #ifndef MEMOS_TASK_H
@@ -11,7 +11,7 @@ typedef struct task {
     int id;
     unsigned int esp, ebp;
     unsigned int eip;
-    page_dir *page_directory;
+    page_directory_t *page_directory;
     struct task *next;
 } task_t;
 
