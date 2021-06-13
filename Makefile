@@ -85,30 +85,20 @@ target/shell.o: kernel/shell.c
 target/kernel.o: kernel/kernel.c
 	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
 
-
-target/load.o: kernel/memory/load_page_dir.asm
-	$(ASM) $< -f elf32 -o $@
-
-target/enable.o: kernel/memory/enable_paging.asm
+target/process.o: kernel/threading/process.asm
 	$(ASM) $< -f elf32 -o $@
 
 target/hate.o: kernel/memory/i_hate_paging.c
 	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
 
-target/mm.o: kernel/memory/memory_management.c
+target/task.o: kernel/threading/task.c
 	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
 
-target/array.o: kernel/memory/array.c
-	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
-
-target/kheap.o: kernel/memory/kheap.c
-	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
-
-kernel_targets: target/util.o target/shell.o target/load.o target/enable.o target/hate.o target/mm.o target/array.o target/kheap.o target/kernel.o
+kernel_targets: target/util.o target/shell.o target/hate.o target/task.o target/kernel.o target/process.o
 
 # Finalize
 
-target/kernel.bin: boot/entry.o target/screen.o target/isr.o target/interrupts.o target/gdt.o target/idt.o target/keyboard.o target/util.o target/shell.o target/load.o target/timer.o target/enable.o target/hate.o target/mm.o target/array.o target/kheap.o target/kernel.o target/io_functions.o
+target/kernel.bin: boot/entry.o target/screen.o target/isr.o target/interrupts.o target/gdt.o target/idt.o target/keyboard.o target/util.o target/shell.o target/timer.o target/hate.o target/task.o target/kernel.o target/process.o target/io_functions.o
 	$(LD) -m elf_i386 -o $@ -Ttext 0x1000 $^
 
 target/os-image: target/kernel.bin
