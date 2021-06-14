@@ -6,6 +6,7 @@
 #define MEMOS_PAGING_H
 
 #include <stdint.h>
+#include "../../../drivers/isr.h"
 
 void set_page_dir();
 
@@ -54,5 +55,7 @@ uint32_t kmalloc_p(uint32_t sz, uint32_t *phys);
 void switch_page_directory(page_directory_t *dir);
 
 page_directory_t *clone_page_directory(page_directory_t *src);
+
+void page_fault(registers_t regs);
 
 #endif //MEMOS_PAGING_H

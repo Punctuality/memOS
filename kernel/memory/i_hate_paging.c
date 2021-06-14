@@ -3,6 +3,10 @@
 //
 
 #include "include/paging.h"
+#include "../../drivers/isr.h"
+#include "../../drivers/screen.h"
+#include "../shell.h"
+#include "../../drivers/descriptor_tables.h"
 
 extern void _end;
 uintptr_t placement_address = (uintptr_t) &_end;
@@ -105,6 +109,8 @@ void set_page_dir() {
         alloc_frame(&first_page_table.pages[i], 1, 1, i);
     }
 
+    registers_interrupt_handler(14, page_fault);
+
     kernel_page_directory[0].page_table_4kb_aligned_address = ((unsigned int) &first_page_table) >> 12 & 0x3FF;
     kernel_page_directory[0].read_write = 1;
     kernel_page_directory[0].present = 1;
@@ -113,4 +119,29 @@ void set_page_dir() {
     switch_page_directory(kernel_page_directory);
 
 //    for(;;);
+}
+
+
+void page_fault(registers_t regs) {
+    unsigned int fault_address;
+    asm volatile("mov %%cr2, %0" :"=r" (fault_address));
+
+    int present = !(regs.err_code & 0x1);
+    int rw = regs.err_code & 0x2;
+    int us = regs.err_code & 0x4;
+    int reserved = regs.err_code & 0x8;
+    int id = regs.err_code & 0x10;
+
+    print_newline();
+    print_d("Page fault! ( ");
+    if (present) print_d("present ");
+    if (rw) print_d("read-only ");
+    if (us) print_d("user mode ");
+    if (reserved) print_d("reserved");
+    print_d(") at 0x");
+    print_hex_d(fault_address);
+    print_d(" - EIP: ");
+    print_hex_d(regs.eip);
+    print_newline();
+    panic("PAGE FAULT!!!");
 }

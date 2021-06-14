@@ -48,7 +48,7 @@ void echo() {
 void panic(const char *msg) {
     print_newline();
     print_d("KERNEL PANIC( ");
-    print_d(msg);
+    print(msg, 0x04);
     print_d(" )");
     print_newline();
     for(;;);
