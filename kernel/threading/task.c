@@ -28,7 +28,41 @@ void tasking_init() {
 }
 
 void task_switch() {
-    return;
+    if (!current_task)
+        return;
+
+    uint32_t esp, ebp, eip;
+
+    asm volatile("mov %%esp, %0" : "=r"(esp));
+    asm volatile("mov %%ebp, %0" : "=r"(ebp));
+
+    eip = read_eip();
+
+    if (eip == 0x12345)
+        return;
+
+    current_task->eip = eip;
+    current_task->esp = esp;
+    current_task->ebp = ebp;
+
+    current_task = current_task->next;
+
+    if (!current_task)
+        current_task = ready_queue;
+
+    eip = current_task->eip;
+    esp = current_task->esp;
+    ebp = current_task->ebp;
+
+    current_directory = current_task->page_directory;
+
+    asm volatile("cli");
+    asm volatile("mov %0, %%ecx":: "r"(eip));
+    asm volatile("mov %0, %%esp":: "r"(esp));
+//    asm volatile("mov %0, %%ebp":: "r"(ebp)); // page fault
+    asm volatile("mov %0, %%eax" :: "r"(0x12345));
+    asm volatile("sti");
+//    asm volatile("jmp *%%ecx" :: "r"(&current_directory)); //page fault
 }
 
 int fork() {
@@ -55,8 +89,10 @@ int fork() {
     unsigned int eip = read_eip();
 
     if (current_task == parent_task) {
-        unsigned int esp; asm volatile("mov %%esp, %0" : "=r"(esp));
-        unsigned int ebp; asm volatile("mov %%esp, %0" : "=r"(ebp));
+        unsigned int esp;
+        asm volatile("mov %%esp, %0" : "=r"(esp));
+        unsigned int ebp;
+        asm volatile("mov %%esp, %0" : "=r"(ebp));
         new_task->esp = esp;
         new_task->ebp = ebp;
         new_task->eip = eip;

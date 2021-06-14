@@ -5,6 +5,7 @@
 #include "multiboot.h"
 #include "threading/include/task.h"
 #include "../drivers/timer.h"
+#include "../drivers/screen.h"
 #include <stdint.h>
 
 
@@ -27,12 +28,19 @@ void kmain(struct multiboot_info *info, uint32_t initialStack) {
 
     shell_init();
 
+    asm volatile("sti");
+    init_timer(50);
+
     asm volatile ("int $0x0");
     asm volatile ("int $0x1");
     asm volatile ("int $0x4");
 
-    asm volatile("sti");
-    init_timer(50);
+    int ret = fork();
+
+    print_d("fork() returned: ");
+    print_hex_d(ret);
+    print_d(", and get_pid returned ");
+    print_hex_d(get_pid());
 
     while(1) __asm__("hlt\n\t");
 }
