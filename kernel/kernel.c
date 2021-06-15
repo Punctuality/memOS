@@ -1,5 +1,5 @@
 #include "../drivers/keyboard.h"
-#include "../drivers/descriptor_tables.h"
+#include "../drivers/idt.h"
 #include "shell.h"
 #include "memory/include/paging.h"
 #include "multiboot.h"
