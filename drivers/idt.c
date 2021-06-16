@@ -2,7 +2,7 @@
 // Created by sdfedorov on 14/01/2021.
 //
 
-#include "descriptor_tables.h"
+#include "idt.h"
 
 struct idt_pointer {
     unsigned short limit;

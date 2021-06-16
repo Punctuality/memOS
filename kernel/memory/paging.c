@@ -6,7 +6,7 @@
 #include "../../drivers/isr.h"
 #include "../../drivers/screen.h"
 #include "../shell.h"
-#include "../../drivers/descriptor_tables.h"
+#include "../../drivers/idt.h"
 
 extern void _end;
 uintptr_t placement_address = (uintptr_t) &_end;
