@@ -122,6 +122,18 @@ void set_page_dir() {
 }
 
 
+void stacktrace(int *ebp) {
+    while (ebp != 0) {
+        int eip = ebp[1];
+        print_hex_d(*(&eip + 3));
+        print_hex_d(*(&eip + 2));
+        print_hex_d(*(&eip + 1));
+        print_hex_d(*(&eip + 0));
+        print_newline();
+        ebp = ebp[0];
+    }
+}
+
 void page_fault(registers_t regs) {
     unsigned int fault_address;
     asm volatile("mov %%cr2, %0" :"=r" (fault_address));
@@ -142,6 +154,15 @@ void page_fault(registers_t regs) {
     print_hex_d(fault_address);
     print_d(" - EIP: ");
     print_hex_d(regs.eip);
+    print_hex_d(*(&regs.eip + 1));
+    print_hex_d(*(&regs.eip + 2));
+    print_hex_d(*(&regs.eip + 3));
+    print_hex_d(*(&regs.eip + 4));
     print_newline();
+
+    int *x = 0;
+    asm volatile("mov %%ebp, (%0)" :: "r"(&x));
+    stacktrace(x);
+
     panic("PAGE FAULT!!!");
 }

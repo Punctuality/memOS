@@ -14,6 +14,28 @@ extern page_directory_t *current_directory;
 
 extern unsigned int read_eip();
 
+void thread_start() {
+    current_task->f(current_task->arg);
+    // this this task as finished
+}
+
+void create_thread(void(*f)(), void* arg) {
+    task_t *parent_task = (task_t *) current_task;
+
+    task_t *new_task = (task_t *) kmalloc(sizeof(task_t));
+
+    new_task->id = next_pid++;
+    new_task->esp = 0; // alloc few pages for new thread's stack указатель в конец, стек растет вверх
+    new_task->ebp = 0;
+    new_task->eip = &thread_start;
+    new_task->page_directory = current_directory;
+    new_task->next = ready_queue;
+    new_task->f = f;
+    new_task->arg = arg;
+
+    ready_queue = new_task;
+}
+
 void tasking_init() {
     asm volatile("cli");
 
@@ -59,7 +81,7 @@ void task_switch() {
     asm volatile("cli");
     asm volatile("mov %0, %%ecx":: "r"(eip));
     asm volatile("mov %0, %%esp":: "r"(esp));
-//    asm volatile("mov %0, %%ebp":: "r"(ebp)); // page fault
+    asm volatile("mov %0, %%ebp":: "r"(ebp)); // page fault
     asm volatile("mov %0, %%eax" :: "r"(0x12345));
     asm volatile("sti");
 //    asm volatile("jmp *%%ecx" :: "r"(&current_directory)); //page fault

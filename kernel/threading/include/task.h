@@ -13,6 +13,8 @@ typedef struct task {
     unsigned int eip;
     page_directory_t *page_directory;
     struct task *next;
+    void *arg;
+    void (*f)();
 } task_t;
 
 void tasking_init();
@@ -20,6 +22,8 @@ void tasking_init();
 void task_switch();
 
 int fork();
+
+void create_thread(void(*f)(), void* arg) {
 
 void move_stack(void *new_stack_start, unsigned int size);
 
