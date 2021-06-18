@@ -25,4 +25,6 @@ void move_stack(void *new_stack_start, unsigned int size);
 
 int get_pid();
 
+void create_thread(void (*f)());
+
 #endif //MEMOS_TASK_H

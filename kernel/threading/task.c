@@ -14,6 +14,39 @@ extern page_directory_t *current_directory;
 
 extern unsigned int read_eip();
 
+void create_thread(void (*f)()) {
+    asm volatile("cli");
+    task_t *parent_task = (task_t *) current_task;
+
+    page_directory_t *directory = current_directory;
+
+    task_t *new_task = (task_t *) kmalloc(sizeof(task_t));
+
+    new_task->id = next_pid++;
+    new_task->esp = 0;
+    new_task->ebp = 0;
+    new_task->eip = (unsigned int) f;
+    new_task->page_directory = directory;
+    new_task->next = 0;
+
+    task_t *tmp_task = (task_t*) ready_queue;
+    while (tmp_task->next)
+        tmp_task = tmp_task->next;
+
+    tmp_task->next = new_task;
+
+    if (current_task == parent_task) {
+        unsigned int esp;
+        asm volatile("mov %%esp, %0" : "=r"(esp));
+        unsigned int ebp;
+        asm volatile("mov %%ebp, %0" : "=r"(ebp));
+        new_task->esp = esp;
+        new_task->ebp = ebp;
+        asm volatile("sti");
+    }
+    asm volatile("sti");
+}
+
 void tasking_init() {
     asm volatile("cli");
 
@@ -57,12 +90,13 @@ void task_switch() {
     current_directory = current_task->page_directory;
 
     asm volatile("cli");
-    asm volatile("mov %0, %%ecx":: "r"(eip));
-    asm volatile("mov %0, %%esp":: "r"(esp));
-//    asm volatile("mov %0, %%ebp":: "r"(ebp)); // page fault
-    asm volatile("mov %0, %%eax" :: "r"(0x12345));
+    asm volatile("mov %0, %%ecx" :: "r"(eip));
+    asm volatile("mov %0, %%esp" :: "r"(esp));
+    asm volatile("mov %0, %%ebp" :: "r"(ebp));
+    asm volatile("mov %0, %%cr3" :: "r"(current_directory));
+    asm volatile("mov $0x12345, %eax");
     asm volatile("sti");
-//    asm volatile("jmp *%%ecx" :: "r"(&current_directory)); //page fault
+    asm volatile("jmp *%ecx");
 }
 
 int fork() {
@@ -70,7 +104,7 @@ int fork() {
 
     task_t *parent_task = (task_t *) current_task;
 
-    page_directory_t *directory = clone_page_directory(current_directory);
+    page_directory_t *directory = current_directory; // should be (page_directory_t *directory = clone_page_directory(current_directory)
 
     task_t *new_task = (task_t *) kmalloc(sizeof(task_t));
 
