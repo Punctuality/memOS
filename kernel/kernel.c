@@ -13,6 +13,28 @@ extern void keyboard_handler_int();
 
 unsigned int initial_esp;
 
+void th_loop(char* msg) {
+    for (;;) {
+
+
+        for (int i = 0; i < 10; i ++) {
+            print_d(msg);
+        }
+        print_d("\n");
+
+        for (int i = 0; i < 100000000; i++);
+
+    }
+}
+
+void th1() {
+    th_loop("th1");
+}
+
+void th2() {
+    th_loop("th2");
+}
+
 void kmain(struct multiboot_info *info, uint32_t initialStack) {
 
     initial_esp = initialStack;
@@ -35,12 +57,9 @@ void kmain(struct multiboot_info *info, uint32_t initialStack) {
     asm volatile ("int $0x1");
     asm volatile ("int $0x4");
 
-    int ret = fork();
+    create_thread(&th1);
+    create_thread(&th2);
 
-    print_d("fork() returned: ");
-    print_hex_d(ret);
-    print_d(", and get_pid returned ");
-    print_hex_d(get_pid());
 
     while(1) __asm__("hlt\n\t");
 }
