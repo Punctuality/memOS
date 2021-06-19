@@ -7,6 +7,7 @@
 #include "../../drivers/screen.h"
 #include "../shell.h"
 #include "../../drivers/idt.h"
+#include "../threading/include/task.h"
 
 extern void _end;
 uintptr_t placement_address = (uintptr_t) &_end;
@@ -143,5 +144,7 @@ void page_fault(registers_t regs) {
     print_d(" - EIP: ");
     print_hex_d(regs.eip);
     print_newline();
+    print_d("PID: ");
+    print_hex_d(get_pid());
     panic("PAGE FAULT!!!");
 }
