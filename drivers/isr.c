@@ -9,9 +9,14 @@ isr_t interrupt_handlers[256];
 extern void write_port(unsigned short port, unsigned char data);
 
 void isr_handler(registers_t regs) {
-    print_d("recieved interrupt: ");
-    print_hex(regs.int_no, 0x02);
-    print_newline();
+    if (interrupt_handlers[regs.int_no] != 0) {
+        isr_t handler = interrupt_handlers[regs.int_no];
+        handler(regs);
+    } else {
+        print_d("unhandled interrupt: ");
+        print_hex(regs.int_no, 0x02);
+        print_newline();
+    }
 }
 
 void irq_handler(registers_t regs) {

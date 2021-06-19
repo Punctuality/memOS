@@ -5,6 +5,7 @@
 #include "timer.h"
 #include "isr.h"
 #include "screen.h"
+#include "../kernel/threading/include/task.h"
 
 extern void write_port(unsigned short port, unsigned char data);
 
@@ -16,9 +17,7 @@ unsigned int tick = 0;
 
 static void timer_callback(registers_t regs) {
     tick++;
-    print_d("Tick: ");
-    print_hex_d(tick);
-    print_newline();
+    task_switch();
 }
 
 void init_timer(unsigned int frequency) {

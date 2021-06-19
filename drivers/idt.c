@@ -2,7 +2,7 @@
 // Created by sdfedorov on 14/01/2021.
 //
 
-#include "descriptor_tables.h"
+#include "idt.h"
 
 struct idt_pointer {
     unsigned short limit;
@@ -109,8 +109,8 @@ static void initialize_pic() {
     write_port(PIC_2_DATA, 0x28);
 
     /* ICW3 - setup cascading */
-    write_port(PIC_1_DATA, 0x00);
-    write_port(PIC_2_DATA, 0x00);
+    write_port(PIC_1_DATA, 0x04);
+    write_port(PIC_2_DATA, 0x02);
 
     /* ICW4 - environment info */
     write_port(PIC_1_DATA, 0x01);
@@ -118,8 +118,8 @@ static void initialize_pic() {
     /* Initialization finished */
 
     /* mask interrupts */
-    write_port(0x21, 0xff);
-    write_port(0xA1, 0xff);
+    write_port(0x21, 0x00);
+    write_port(0xA1, 0x00);
 }
 
 void idt_init() {

@@ -2,117 +2,84 @@ CC = gcc -fpic -g -O0
 ASM = nasm -g
 LD = ld
 
-# Custom
+BOOT_DIR = boot
+DRIVERS_DIR = drivers
+KERNEL_DIR = kernel
+TARGET_DIR = target
 
-deploy-image: recompile clean-object-files
+# RUNNABLE
 
-disk: target/os-image
+deploy: $(TARGET_DIR)/os-image
+redeploy: clean deploy
+
+disk: deploy
 	sh make_disk_image.sh
 
-run: all target/os-image
-	qemu-system-i386 -machine type=pc-i440fx-3.1 -kernel target/os-image
+run: deploy
+	qemu-system-i386 -machine type=pc-i440fx-3.1 -kernel $(TARGET_DIR)/os-image
 
-debug: all target/os-image
-	qemu-system-i386 -machine type=pc-i440fx-3.1 -D log.txt -hda target/disk.img -s -S
+debug_boot: deploy
+	qemu-system-i386 -machine type=pc-i440fx-3.1 -D log.txt -hda $(TARGET_DIR)/disk.img -s -S
 
-debug2: all target/os-image
-	qemu-system-i386 -machine type=pc-i440fx-3.1 -D log.txt -kernel target/os-image -s -S
+debug: deploy
+	qemu-system-i386 -machine type=pc-i440fx-3.1 -D log.txt -kernel $(TARGET_DIR)/os-image -s -S
 
-recompile: prep all
-
-all: target/os-image
-
-prep: clean boot/ kernel/ drivers/
-	mkdir target
+all: deploy
 
 clean:
-	rm -rf target/
-
-clean-object-files:
-	rm target/*.o
-	rm target/*.bin
+	rm -rf $(TARGET_DIR)/
 
 # Boot
 
-boot/entry.o: boot/entry.asm
-	$(ASM) $< -f elf32 -o $@
+BOOT_SRCS_ASM = $(wildcard $(BOOT_DIR)/*.asm) $(wildcard $(BOOT_DIR)/*/*.asm)
 
-target/kernel_entry.o: boot/kernel_entry.asm
-	$(ASM) $< -f elf32 -o $@
+BOOT_TARGETS = $(patsubst $(BOOT_DIR)/%.asm,$(TARGET_DIR)/%.o,$(BOOT_SRCS_ASM))
 
-target/bootstrap.bin: boot/bootstrap.asm
-	# $(ASM) $< -f bin -o $@
-	$(ASM) $< -f elf32 -o $@
+BOOT_SUB_DIRS = $(patsubst $(TARGET_DIR)/%,%,$(dir $(BOOT_TARGETS)))
 
-boot_targets: target/kernel_entry.o
+$(TARGET_DIR)/%.o: $(BOOT_DIR)/%.asm
+	$(ASM) $< -f elf32 -o $@
 
 # Drivers
 
-target/screen.o: drivers/screen.c
-	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
+DRIVERS_SRCS_C   = $(wildcard $(DRIVERS_DIR)/*.c) $(wildcard $(DRIVERS_DIR)/*/*.c)
+DRIVERS_SRCS_ASM = $(wildcard $(DRIVERS_DIR)/*.asm) $(wildcard $(DRIVERS_DIR)/*/*.asm)
 
-target/isr.o: drivers/isr.c
-	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
+DRIVERS_TARGETS = $(patsubst $(DRIVERS_DIR)/%.c,$(TARGET_DIR)/%.o,$(DRIVERS_SRCS_C)) \
+                 $(patsubst $(DRIVERS_DIR)/%.asm,$(TARGET_DIR)/%.o,$(DRIVERS_SRCS_ASM))
 
-target/gdt.o: drivers/gdt.asm
+DRIVERS_SUB_DIRS = $(patsubst $(TARGET_DIR)/%,%,$(dir $(DRIVERS_TARGETS)))
+
+$(TARGET_DIR)/%.o: $(DRIVERS_DIR)/%.asm
 	$(ASM) $< -f elf32 -o $@
 
-target/interrupts.o: drivers/interrupts.asm
-	$(ASM) $< -f elf32 -o $@
-
-target/idt.o: drivers/descriptor_tables.c
+$(TARGET_DIR)/%.o: $(DRIVERS_DIR)/%.c
 	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
-
-target/keyboard.o: drivers/keyboard.c
-	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
-
-target/io_functions.o: drivers/io_functions.asm
-	$(ASM) $< -f elf32 -o $@
-
-target/timer.o: drivers/timer.c
-	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
-
-driver_targets: target/screen.o target/isr.o target/gdt.o target/interrupts.o target/idt.o target/keyboard.o target/io_functions.o target/timer.o
 
 # Kernel
 
-target/util.o: kernel/util.c
-	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
+KERNEL_SRCS_C   = $(wildcard $(KERNEL_DIR)/*.c) $(wildcard $(KERNEL_DIR)/*/*.c)
+KERNEL_SRCS_ASM = $(wildcard $(KERNEL_DIR)/*.asm) $(wildcard $(KERNEL_DIR)/*/*.asm)
 
-target/shell.o: kernel/shell.c
-	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
+KERNEL_TARGETS = $(patsubst $(KERNEL_DIR)/%.c,$(TARGET_DIR)/%.o,$(KERNEL_SRCS_C)) \
+                 $(patsubst $(KERNEL_DIR)/%.asm,$(TARGET_DIR)/%.o,$(KERNEL_SRCS_ASM))
 
-target/kernel.o: kernel/kernel.c
-	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
+KERNEL_SUB_DIRS = $(patsubst $(TARGET_DIR)/%,%,$(dir $(KERNEL_TARGETS)))
 
-
-target/load.o: kernel/memory/load_page_dir.asm
+$(TARGET_DIR)/%.o: $(KERNEL_DIR)/%.asm
 	$(ASM) $< -f elf32 -o $@
 
-target/enable.o: kernel/memory/enable_paging.asm
-	$(ASM) $< -f elf32 -o $@
-
-target/hate.o: kernel/memory/i_hate_paging.c
+$(TARGET_DIR)/%.o: $(KERNEL_DIR)/%.c
 	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
-
-target/mm.o: kernel/memory/memory_management.c
-	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
-
-target/array.o: kernel/memory/array.c
-	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
-
-target/kheap.o: kernel/memory/kheap.c
-	$(CC) -fno-pie -m32 -ffreestanding -c $< -o $@
-
-kernel_targets: target/util.o target/shell.o target/load.o target/enable.o target/hate.o target/mm.o target/array.o target/kheap.o target/kernel.o
 
 # Finalize
 
-target/kernel.bin: boot/entry.o target/screen.o target/isr.o target/interrupts.o target/gdt.o target/idt.o target/keyboard.o target/util.o target/shell.o target/load.o target/timer.o target/enable.o target/hate.o target/mm.o target/array.o target/kheap.o target/kernel.o target/io_functions.o
-	$(LD) -m elf_i386 -o $@ -Ttext 0x1000 $^
+ALL_TARGETS = $(BOOT_TARGETS) $(DRIVERS_TARGETS) $(KERNEL_TARGETS)
 
-target/os-image: target/kernel.bin
-	cp $^ $@
+prep_target_subdirs:
+	mkdir -p $(dir $(ALL_TARGETS))
 
-#target/os-image: target/bootstrap.bin target/kernel.bin
-#	cat $^ > $@
+compile_os: prep_target_subdirs $(ALL_TARGETS)
+
+$(TARGET_DIR)/os-image: compile_os
+	$(LD) -m elf_i386 -o $@ -Ttext 0x1000 $(ALL_TARGETS)
