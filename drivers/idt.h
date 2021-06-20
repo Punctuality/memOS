@@ -27,6 +27,39 @@ struct gdt_ptr_struct {
     unsigned int base;
 } __attribute__((packed));
 
+struct tss_entry_struct {
+    unsigned int prev_tss;
+    unsigned int esp0;
+    unsigned int ss0;
+    unsigned int esp1;
+    unsigned int ss1;
+    unsigned int esp2;
+    unsigned int ss2;
+    unsigned int cr3;
+    unsigned int eip;
+    unsigned int eflags;
+    unsigned int eax;
+    unsigned int ecx;
+    unsigned int edx;
+    unsigned int ebx;
+    unsigned int esp;
+    unsigned int ebp;
+    unsigned int esi;
+    unsigned int edi;
+    unsigned int es;
+    unsigned int cs;
+    unsigned int ss;
+    unsigned int ds;
+    unsigned int fs;
+    unsigned int gs;
+    unsigned int ldt;
+    unsigned short int trap;
+    unsigned short int iomap_base;
+} __attribute__((packed));
+
+typedef struct tss_entry_struct tss_entry_t;
+
+
 typedef struct gdt_ptr_struct gdt_ptr_t;
 
 static void gdt_init();
@@ -38,6 +71,8 @@ void init_descriptor_tables();
 void load_idt_entry(int isr_number, unsigned long base, short int selector, unsigned char flags);
 
 void idt_init();
+
+static void write_tss(signed int num, unsigned short ss0, unsigned int esp0);
 
 extern void isr0();
 

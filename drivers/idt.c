@@ -19,14 +19,17 @@ struct idt_entry {
 
 struct idt_entry idt_table[IDT_SIZE];
 struct idt_pointer idt_ptr;
-gdt_entry_t gdt_entries[5];
+gdt_entry_t gdt_entries[6];
 gdt_ptr_t gdt_ptr;
+tss_entry_t tss_entry;
 
 extern void write_port(unsigned short port, unsigned char data);
 
 extern void idt_flush(unsigned int);
 
 extern void gdt_flush(unsigned int);
+
+extern void tss_flush();
 
 extern void keyboard_handler_int();
 
@@ -128,7 +131,7 @@ void idt_init() {
 }
 
 static void gdt_init() {
-    gdt_ptr.limit = (sizeof(gdt_entry_t) * 5) - 1;
+    gdt_ptr.limit = (sizeof(gdt_entry_t) * 6) - 1;
     gdt_ptr.base = (unsigned int) &gdt_entries;
 
     gdt_set_gate(0, 0, 0, 0, 0);               // null
@@ -136,8 +139,10 @@ static void gdt_init() {
     gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF);// data
     gdt_set_gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF);// user mode code
     gdt_set_gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF);// user mode data
+    write_tss(5, 0x10, 0x0);
 
     gdt_flush((unsigned int) &gdt_ptr);
+    tss_flush();
 }
 
 static void gdt_set_gate(int num, unsigned int base, unsigned int limit, unsigned char access, unsigned char gran) {
@@ -150,6 +155,20 @@ static void gdt_set_gate(int num, unsigned int base, unsigned int limit, unsigne
 
     gdt_entries[num].granularity |= gran & 0xF0;
     gdt_entries[num].access = access;
+}
+
+static void write_tss(signed int num, unsigned short ss0, unsigned int esp0) {
+    unsigned int base = (unsigned int) &tss_entry;
+    unsigned int limit = base + sizeof(tss_entry);
+
+    gdt_set_gate(num, base, limit, 0xE9, 0x00);
+
+
+    tss_entry.ss0 = ss0;
+    tss_entry.esp0 = esp0;
+    tss_entry.cs = 0x0b;
+    tss_entry.ss = tss_entry.ds = tss_entry.es = tss_entry.fs = tss_entry.gs = 0x13;
+    tss_entry.iomap_base = sizeof(tss_entry);
 }
 
 void init_descriptor_tables() {
