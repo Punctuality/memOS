@@ -7,6 +7,7 @@
 #include "../../drivers/screen.h"
 #include "../shell.h"
 #include "../../drivers/idt.h"
+#include "../threading/include/task.h"
 
 extern void _end;
 uintptr_t placement_address = (uintptr_t) &_end;
@@ -32,6 +33,10 @@ uint32_t kmalloc_int(unsigned int sz, int align, unsigned int *phys) {
 
 uint32_t kmalloc(uint32_t sz) {
     return kmalloc_int(sz, 0, 0);
+}
+
+uint32_t kmalloc_a(uint32_t sz) {
+    return kmalloc_int(sz, 1, 0);
 }
 
 uint32_t kmalloc_ap(uint32_t sz, uint32_t *phys) {
@@ -143,5 +148,7 @@ void page_fault(registers_t regs) {
     print_d(" - EIP: ");
     print_hex_d(regs.eip);
     print_newline();
+    print_d("PID: ");
+    print_hex_d(get_pid());
     panic("PAGE FAULT!!!");
 }
