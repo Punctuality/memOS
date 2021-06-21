@@ -3,6 +3,7 @@
 //
 
 #include "idt.h"
+#include "../kernel/threading/include/task.h"
 
 struct idt_pointer {
     unsigned short limit;
@@ -145,6 +146,10 @@ static void gdt_init() {
     tss_flush();
 }
 
+void set_kernel_stack(unsigned int stack) {
+    tss_entry.esp0 = stack;
+}
+
 static void gdt_set_gate(int num, unsigned int base, unsigned int limit, unsigned char access, unsigned char gran) {
     gdt_entries[num].base_low = (base & 0xFFFF);
     gdt_entries[num].base_middle = (base >> 16) & 0xFF;
@@ -174,4 +179,8 @@ static void write_tss(signed int num, unsigned short ss0, unsigned int esp0) {
 void init_descriptor_tables() {
     idt_init();
     gdt_init();
+}
+
+void set_dir(task_t current_task) {
+    tss_entry.cr3 = (unsigned int) current_task.page_directory;
 }

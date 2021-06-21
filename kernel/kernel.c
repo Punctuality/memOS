@@ -6,6 +6,7 @@
 #include "threading/include/task.h"
 #include "../drivers/timer.h"
 #include "../drivers/screen.h"
+#include "syscall/include/syscall.h"
 #include <stdint.h>
 
 
@@ -57,8 +58,12 @@ void kmain(struct multiboot_info *info, uint32_t initialStack) {
     asm volatile ("int $0x1");
     asm volatile ("int $0x4");
 
-    create_thread(&th1);
-    create_thread(&th2);
+//    syscalls_init();
+
+    switch_to_user_mode();
+//
+//    create_thread(&th1);
+//    create_thread(&th2);
 
 
     while(1) __asm__("hlt\n\t");

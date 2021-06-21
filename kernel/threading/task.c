@@ -3,6 +3,7 @@
 //
 
 #include "include/task.h"
+#include "../../drivers/idt.h"
 
 volatile task_t *current_task;
 
@@ -27,9 +28,10 @@ void create_thread(void (*f)()) {
     new_task->ebp = 0;
     new_task->eip = (unsigned int) f;
     new_task->page_directory = directory;
+    new_task->kernel_stack = kmalloc_a(KERNEL_STACK_SIZE);
     new_task->next = 0;
 
-    task_t *tmp_task = (task_t*) ready_queue;
+    task_t *tmp_task = (task_t *) ready_queue;
     while (tmp_task->next)
         tmp_task = tmp_task->next;
 
@@ -56,6 +58,7 @@ void tasking_init() {
     current_task->eip = 0;
     current_task->page_directory = current_directory;
     current_task->next = 0;
+    current_task->kernel_stack = kmalloc_a(KERNEL_STACK_SIZE);
 
     asm volatile("sti");
 }
@@ -89,11 +92,13 @@ void task_switch() {
 
     current_directory = current_task->page_directory;
 
+    set_kernel_stack(current_task->kernel_stack+KERNEL_STACK_SIZE);
+
     asm volatile("cli");
-    asm volatile("mov %0, %%ecx" :: "r"(eip));
-    asm volatile("mov %0, %%esp" :: "r"(esp));
-    asm volatile("mov %0, %%ebp" :: "r"(ebp));
-    asm volatile("mov %0, %%cr3" :: "r"(current_directory));
+    asm volatile("mov %0, %%ecx"::"r"(eip));
+    asm volatile("mov %0, %%esp"::"r"(esp));
+    asm volatile("mov %0, %%ebp"::"r"(ebp));
+    asm volatile("mov %0, %%cr3"::"r"(current_directory));
     asm volatile("mov $0x12345, %eax");
     asm volatile("sti");
     asm volatile("jmp *%ecx");
@@ -145,4 +150,36 @@ void move_stack(void *new_stack_start, unsigned int size) {
 
 int get_pid() {
     return current_task->id;
+}
+
+extern void jump_usermode();
+void switch_to_user_mode() {
+    set_dir(*current_task);
+
+    set_kernel_stack(current_task->kernel_stack+KERNEL_STACK_SIZE);
+    jump_usermode();
+
+//    asm volatile ("cli");
+
+//    asm volatile("mov $0x23, %ax");
+//    asm volatile("mov %ax, %ds");
+//    asm volatile("mov %ax, %es");
+//    asm volatile("mov %ax, %fs");
+//    asm volatile("mov %ax, %gs");
+
+//    asm volatile("mov %esp, %eax");
+//    asm volatile("pushl $0x23");
+//    asm volatile("pushl %eax");
+//    asm volatile("pushf");
+//    asm volatile("pushl $0x1B");
+//    asm volatile("push $1f");
+//    asm volatile("iret; \
+//    1: \
+//    ");
+}
+
+
+
+void test_user_function() {
+    asm volatile("cli");
 }

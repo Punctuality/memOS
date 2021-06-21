@@ -5,6 +5,8 @@
 #ifndef OPERATING_SYSTEMS_ITMO_2020_IDT_H
 #define OPERATING_SYSTEMS_ITMO_2020_IDT_H
 
+#include "../kernel/threading/include/task.h"
+
 #define PIC_1_CTRL 0x20
 #define PIC_2_CTRL 0xA0
 #define PIC_1_DATA 0x21
@@ -59,6 +61,7 @@ struct tss_entry_struct {
 
 typedef struct tss_entry_struct tss_entry_t;
 
+void set_kernel_stack(unsigned int stack);
 
 typedef struct gdt_ptr_struct gdt_ptr_t;
 
@@ -169,5 +172,7 @@ extern void irq13();
 extern void irq14();
 
 extern void irq15();
+
+void set_dir(task_t current_task);
 
 #endif //OPERATING_SYSTEMS_ITMO_2020_IDT_H

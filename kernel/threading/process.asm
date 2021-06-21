@@ -32,5 +32,22 @@ copy_page_physical:
 
 [GLOBAL read_eip]
 read_eip:
-  pop eax
-  jmp eax
+    pop eax
+    jmp eax
+
+[GLOBAL jump_usermode]
+extern test_user_function
+jump_usermode:
+    mov ax, (4 * 8) | 3
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+
+    mov eax, esp
+    push (4 * 8) | 3
+    push eax
+    pushf
+    push (3 * 8) | 3
+    push test_user_function
+    iret
