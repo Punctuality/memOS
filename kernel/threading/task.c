@@ -74,7 +74,15 @@ void task_switch() {
     if (eip == 0x12345)
         return;
 
-    current_task->eip = eip;
+    if (current_task->id == 1)
+        current_task->eip = eip;
+
+    if (current_task->id == 4){
+        current_task = current_task->next;
+        if (!current_task)
+            current_task = ready_queue;
+    }
+
     current_task->esp = esp;
     current_task->ebp = ebp;
 

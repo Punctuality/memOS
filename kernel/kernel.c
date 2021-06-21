@@ -35,6 +35,10 @@ void th2() {
     th_loop("th2");
 }
 
+void th3() {
+    th_loop("th3");
+}
+
 void kmain(struct multiboot_info *info, uint32_t initialStack) {
 
     initial_esp = initialStack;
@@ -59,6 +63,7 @@ void kmain(struct multiboot_info *info, uint32_t initialStack) {
 
     create_thread(&th1);
     create_thread(&th2);
+    create_thread(&th3);
 
 
     while(1) __asm__("hlt\n\t");
