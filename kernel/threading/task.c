@@ -23,7 +23,7 @@ void create_thread(void (*f)()) {
     task_t *new_task = (task_t *) kmalloc(sizeof(task_t));
 
     new_task->id = next_pid++;
-    new_task->esp = 0;
+    new_task->esp = kmalloc(4096) + 4096;
     new_task->ebp = 0;
     new_task->eip = (unsigned int) f;
     new_task->page_directory = directory;
@@ -81,9 +81,9 @@ void task_switch() {
         current_task = current_task->next;
         if (!current_task)
             current_task = ready_queue;
+        current_task->esp = esp;
     }
 
-    current_task->esp = esp;
     current_task->ebp = ebp;
 
     current_task = current_task->next;

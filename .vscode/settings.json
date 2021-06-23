@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "idt.h": "c",
+        "util.h": "c",
+        "screen.h": "c",
+        "base.h": "c",
+        "shell.h": "c",
+        "task.h": "c",
+        "timer.h": "c",
+        "multiboot.h": "c",
+        "paging.h": "c",
+        "isr.h": "c",
+        "*.tcc": "c",
+        "sstream": "c",
+        "test.h": "c"
+    }
+}

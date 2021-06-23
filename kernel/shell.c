@@ -6,11 +6,14 @@
 #include "util.h"
 #include "base.h"
 #include "../drivers/screen.h"
+#include "memory/include/test.h"
 
 #define MSG_LEN 9
 #define MAX_ARGS 5
 #define MAX_LEN MAX_COLS - MSG_LEN
-#define COMMANDS_COUNT 9
+#define COMMANDS_COUNT 10
+
+extern void shutdown();
 
 static struct command cmds[COMMANDS_COUNT] = {
     (struct command) { 0, 1, "echo" },
@@ -22,6 +25,7 @@ static struct command cmds[COMMANDS_COUNT] = {
     (struct command) { 6, 0, "clear" },
     (struct command) { 7, 0, "exit" },
     (struct command) { 8, 0, "help" },
+    (struct command) { 9, 0, "memtest" },
 };
 
 static char cli_msg[MSG_LEN] = "~console>";
@@ -126,7 +130,7 @@ void clear() {
 }
 
 void exit_f() {
-    print_d("\nIMAGE THAT THIS THING IS IN SHUTDOWN process!");
+    asm volatile ("outb %0, %1" : : "a" (0x2000), "Nd" (0x604));
 }
 
 void help() {
@@ -146,6 +150,10 @@ void help() {
 
     for (int i = 0; i < COMMANDS_COUNT + 2; i++)
         print_d(help_list[i]);
+}
+
+void memtest() {
+    test_paging();
 }
 
 void execute_command() {
@@ -181,6 +189,7 @@ void execute_command() {
             case 6: { clear(); break; }
             case 7: { exit_f(); break; }
             case 8: { help(); break; }
+            case 9: { memtest(); break; }
         }
     }
 }

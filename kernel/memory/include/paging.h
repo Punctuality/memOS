@@ -60,4 +60,6 @@ page_directory_t *clone_page_directory(page_directory_t *src);
 
 void page_fault(registers_t regs);
 
+struct page* get_page_at(void* ptr);
+
 #endif //MEMOS_PAGING_H
