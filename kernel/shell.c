@@ -13,6 +13,8 @@
 #define MAX_LEN MAX_COLS - MSG_LEN
 #define COMMANDS_COUNT 10
 
+extern void shutdown();
+
 static struct command cmds[COMMANDS_COUNT] = {
     (struct command) { 0, 1, "echo" },
     (struct command) { 1, 1, "yes" },
@@ -128,7 +130,7 @@ void clear() {
 }
 
 void exit_f() {
-    print_d("\nIMAGE THAT THIS THING IS IN SHUTDOWN process!");
+    asm volatile ("outb %0, %1" : : "a" (0x2000), "Nd" (0x604));
 }
 
 void help() {
