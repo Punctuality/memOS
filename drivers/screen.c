@@ -30,8 +30,10 @@ void print_newline(void){
 }
 
 void print_char(char val, char color) {
-    vidptr[current_loc++] = val;
-    vidptr[current_loc++] = color;
+    if (current_loc < MAX_COLS * MAX_ROWS * BYTES_PER_CHAR) {
+        vidptr[current_loc++] = val;
+        vidptr[current_loc++] = color;
+    }
 }
 
 void print(const char *str, char color){

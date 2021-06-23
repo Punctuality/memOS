@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [        
+    {
+        "preLaunchTask": "start_debug_qemu",
+        "type": "by-gdb",
+        "request": "launch",
+        "name": "Debug OS",
+        "program": "${workspaceRoot}/target/os-image",
+        "cwd": "${workspaceRoot}",
+        "remote": {
+            "enabled": true,
+            "address": "localhost:1234",
+            "mode": "remote",
+            "execfile": "${workspaceRoot}/target/os-image"
+        }
+    }
+    ]
+}

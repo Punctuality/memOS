@@ -15,14 +15,18 @@ redeploy: clean deploy
 disk: deploy
 	sh make_disk_image.sh
 
-run: deploy
+run_only:
 	qemu-system-i386 -machine type=pc-i440fx-3.1 -kernel $(TARGET_DIR)/os-image
+
+run: deploy run_only
 
 debug_boot: deploy
 	qemu-system-i386 -machine type=pc-i440fx-3.1 -D log.txt -hda $(TARGET_DIR)/disk.img -s -S
 
-debug: deploy
+debug_only:
 	qemu-system-i386 -machine type=pc-i440fx-3.1 -D log.txt -kernel $(TARGET_DIR)/os-image -s -S
+
+debug: deploy debug_only
 
 all: deploy
 
