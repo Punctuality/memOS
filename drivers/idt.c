@@ -131,6 +131,7 @@ void idt_init() {
     initialize_idt_pointer();
 }
 
+extern unsigned int initial_esp;
 static void gdt_init() {
     gdt_ptr.limit = (sizeof(gdt_entry_t) * 6) - 1;
     gdt_ptr.base = (unsigned int) &gdt_entries;
@@ -140,7 +141,7 @@ static void gdt_init() {
     gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF);// data
     gdt_set_gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF);// user mode code
     gdt_set_gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF);// user mode data
-    write_tss(5, 0x10, 0x0);
+    write_tss(5, 0x10, initial_esp);
 
     gdt_flush((unsigned int) &gdt_ptr);
     tss_flush();

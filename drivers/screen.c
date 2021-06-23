@@ -46,6 +46,10 @@ void print(const char *str, char color){
     }
 }
 
+void print_call(const char *str){
+    return print(str, 0x07);
+}
+
 static char to_ascii_char(char c) {
     if (c >= 0xA && c <= 0xF) {
         return c + 0x37;

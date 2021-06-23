@@ -9,7 +9,7 @@
 static void syscall_handler(registers_t *regs);
 
 static void *syscalls[3] = {
-        &print,
+        &print_call,
         &print_hex,
         &print_char
 };
@@ -43,6 +43,6 @@ void syscall_handler(registers_t *regs) {
     regs->eax = ret;
 }
 
-DEFN_SYSCALL1(print, 0, const char*);
+DEFN_SYSCALL1(print_call, 0, const char*);
 DEFN_SYSCALL1(print_hex, 1, const char*);
 DEFN_SYSCALL1(print_char, 2, const char*);

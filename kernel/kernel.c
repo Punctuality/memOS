@@ -58,10 +58,10 @@ void kmain(struct multiboot_info *info, uint32_t initialStack) {
     asm volatile ("int $0x1");
     asm volatile ("int $0x4");
 
-//    syscalls_init();
+    syscalls_init();
 
     switch_to_user_mode();
-//
+//    syscall_print_call("kek");
 //    create_thread(&th1);
 //    create_thread(&th2);
 

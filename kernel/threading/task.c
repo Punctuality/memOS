@@ -159,27 +159,27 @@ void switch_to_user_mode() {
     set_kernel_stack(current_task->kernel_stack+KERNEL_STACK_SIZE);
     jump_usermode();
 
-//    asm volatile ("cli");
-
-//    asm volatile("mov $0x23, %ax");
-//    asm volatile("mov %ax, %ds");
-//    asm volatile("mov %ax, %es");
-//    asm volatile("mov %ax, %fs");
-//    asm volatile("mov %ax, %gs");
-
-//    asm volatile("mov %esp, %eax");
-//    asm volatile("pushl $0x23");
-//    asm volatile("pushl %eax");
-//    asm volatile("pushf");
-//    asm volatile("pushl $0x1B");
-//    asm volatile("push $1f");
-//    asm volatile("iret; \
-//    1: \
-//    ");
+//    asm volatile("  \
+//     cli; \
+//     mov $0x23, %ax; \
+//     mov %ax, %ds; \
+//     mov %ax, %es; \
+//     mov %ax, %fs; \
+//     mov %ax, %gs; \
+//                   \
+//     mov %esp, %eax; \
+//     pushl $0x23; \
+//     pushl %eax; \
+//     pushf; \
+//     pushl $0x1B; \
+//     push $1f; \
+//     iret; \
+//     1: \
+//     ");
 }
 
 
 
 void test_user_function() {
-    asm volatile("cli");
+    //    asm volatile("cli");
 }

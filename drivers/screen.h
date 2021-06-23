@@ -31,6 +31,7 @@ void print_hex(unsigned char hex_val, char color);
 void print_char(char val, char color);
 void backspace(int times);
 
+void print_call(const char *str);
 void set_cursor(int offset);
 
 #endif //OPERATING_SYSTEMS_ITMO_2020_SCREEN_H
