@@ -153,14 +153,13 @@ void page_fault(registers_t regs) {
     panic("PAGE FAULT!!!");
 }
 
-struct page get_page_at(void* ptr) {
-    // void* aligned_addr = ((int)ptr) / 4096 * 4096;
+struct page* get_page_at(void* ptr) {
     unsigned int p_t_idx = ((int) ptr >> 12) & 0x3FF;
     unsigned int p_d_idx = ((int) ptr >> 22) & 0x3FF;
     
     struct page_directory_entry_t cur_page_dir = kernel_page_directory[p_d_idx];
     struct page_table* cur_page_table = cur_page_dir.page_table_4kb_aligned_address << 12;
-    struct page cur_page = cur_page_table->pages[p_t_idx];
+    struct page* cur_page = &cur_page_table->pages[p_t_idx];
 
     return cur_page;
 }
