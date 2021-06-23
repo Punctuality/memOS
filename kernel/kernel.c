@@ -54,9 +54,6 @@ void kmain(struct multiboot_info *info, uint32_t initialStack) {
 
     shell_init();
 
-    // PAGING TESTS
-    test_paging();
-
     // asm volatile("sti");
     // init_timer(1);
 

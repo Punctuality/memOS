@@ -3,7 +3,7 @@
 #include "../../drivers/screen.h"
 #include "../util.h"
 
-int x = 10;
+int x;
 
 int test() {
     switch (x)
@@ -26,7 +26,7 @@ static inline void __native_flush_tlb_single(unsigned int addr)
 void test_paging() {
 
     registers_interrupt_handler(6, wrong_opt);
-
+    x = 10;
     int* old_x = &x;
 
     void* old_page_start = ((int)old_x) / 4096 * 4096; // старая страничка 
