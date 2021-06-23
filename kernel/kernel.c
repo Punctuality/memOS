@@ -2,6 +2,7 @@
 #include "../drivers/idt.h"
 #include "shell.h"
 #include "memory/include/paging.h"
+#include "memory/include/test.h"
 #include "multiboot.h"
 #include "threading/include/task.h"
 #include "../drivers/timer.h"
@@ -15,7 +16,6 @@ unsigned int initial_esp;
 
 void th_loop(char* msg) {
     for (;;) {
-
 
         for (int i = 0; i < 10; i ++) {
             print_d(msg);
@@ -54,8 +54,11 @@ void kmain(struct multiboot_info *info, uint32_t initialStack) {
 
     shell_init();
 
+    // PAGING TESTS
+    test_paging();
+
     asm volatile("sti");
-    init_timer(50);
+    init_timer(1);
 
     asm volatile ("int $0x0");
     asm volatile ("int $0x1");

@@ -152,3 +152,13 @@ void page_fault(registers_t regs) {
     print_hex_d(get_pid());
     panic("PAGE FAULT!!!");
 }
+
+struct page get_page_at(void* ptr) {
+    void* alligned_addr = ((int)ptr) / 4096 * 4096;
+    
+    struct page_table* cur_page_table = current_directory->page_table_4kb_aligned_address;
+
+    print_hex_d(0xFF);
+
+    return first_page_table.pages[0];
+}

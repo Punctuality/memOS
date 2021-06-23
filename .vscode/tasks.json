@@ -1,0 +1,10 @@
+{
+    "version": "2.0.0",
+    "tasks": [{
+        "label": "start_debug_qemu",
+        "command": "make",
+        "args": ["debug_only"],
+        "isBackground": true,
+        "type": "shell"
+    }]
+}
