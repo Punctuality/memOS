@@ -109,13 +109,18 @@ page_directory_t *clone_page_directory(page_directory_t src[1024]) {
     return dir;
 }
 
+void kek(){
+    return;
+}
+
 void set_page_dir() {
     for (unsigned int i = 0; i < 1024; i++) {
         alloc_frame(&first_page_table.pages[i], 1, 1, i);
     }
 
     registers_interrupt_handler(14, page_fault);
-
+    registers_interrupt_handler(13, kek);
+    registers_interrupt_handler(6, kek);
     kernel_page_directory[0].page_table_4kb_aligned_address = ((unsigned int) &first_page_table) >> 12 & 0x3FF;
     kernel_page_directory[0].read_write = 1;
     kernel_page_directory[0].present = 1;
@@ -128,6 +133,7 @@ void set_page_dir() {
 
 
 void page_fault(registers_t regs) {
+    asm volatile("cli");
     unsigned int fault_address;
     asm volatile("mov %%cr2, %0" :"=r" (fault_address));
 
@@ -151,4 +157,5 @@ void page_fault(registers_t regs) {
     print_d("PID: ");
     print_hex_d(get_pid());
     panic("PAGE FAULT!!!");
+    asm volatile("sti");
 }
