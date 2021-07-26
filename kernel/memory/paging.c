@@ -144,7 +144,7 @@ void page_fault(registers_t regs) {
     int id = regs.err_code & 0x10;
 
     print_newline();
-    print_d("Page fault! ( ");
+    print_d("Page fisting! ( ");
     if (present) print_d("present ");
     if (rw) print_d("read-only ");
     if (us) print_d("user mode ");

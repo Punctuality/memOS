@@ -8,7 +8,7 @@
 #include "../drivers/screen.h"
 #include "memory/include/test.h"
 
-#define MSG_LEN 9
+#define MSG_LEN 7
 #define MAX_ARGS 5
 #define MAX_LEN MAX_COLS - MSG_LEN
 #define COMMANDS_COUNT 10
@@ -28,7 +28,7 @@ static struct command cmds[COMMANDS_COUNT] = {
     (struct command) { 9, 0, "memtest" },
 };
 
-static char cli_msg[MSG_LEN] = "~console>";
+static char cli_msg[MSG_LEN] = "~slave>";
 static char cur_row[MAX_LEN];
 static int cur_row_pos;
 char* cmd_args[MAX_ARGS];
@@ -51,7 +51,7 @@ void echo() {
 
 void panic(const char *msg) {
     print_newline();
-    print_d("KERNEL PANIC( ");
+    print_d("KERNEL CUMMING( ");
     print(msg, 0x04);
     print_d(" )");
     print_newline();
@@ -61,7 +61,7 @@ void panic(const char *msg) {
 void yes() {
     int yes_rep = MAX_ROWS - 1;
     if (cmd_args[1] == NULL) {
-        for (int i = 0; i<yes_rep; i++) print_d("\nyes");
+        for (int i = 0; i<yes_rep; i++) print_d("\nass");
     } else {
         for (int i = 0; i<yes_rep; i++) {
             print_newline();
@@ -103,9 +103,9 @@ void wmem() {
     int c;
     for(c = 0; c < size; c++) *(addr + c) = data[c];
 
-    print_d("\n: Written ");
+    print_d("\n: Fisted ");
     print_d(int_to_str(size));
-    print_d(" bytes -> ");
+    print_d(" asses -> ");
     print_d(cmd_args[1]);
 }
 
@@ -120,7 +120,7 @@ void add() {
         *(res_addr) = result;
     }
 
-    print_d("RESULT: ");
+    print_d("DO YOU LIKE WHAT YOU SEE: ");
     print_hex_d(result);
 }
 
@@ -144,7 +144,7 @@ void help() {
             "\nadd (addr_1) (addr_2) [res_addr] - sums two bytes of data",
             "\nclear - flushes the screen data",
             "\nexit - shutdowns the machine",
-            "\nhelp - show help",
+            "\nhelp - fist ass",
             "\n(addr) in DECIMAL, (size) in DECIMAL, (data) in CHARACTERS"
     };
 
